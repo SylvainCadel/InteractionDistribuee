@@ -1,43 +1,49 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Scanner;
+
 import fr.dgac.ivy.Ivy;
 import fr.dgac.ivy.IvyClient;
 import fr.dgac.ivy.IvyException; 
 
-public class Main {
+public class Server {
     static Ivy ivy = new Ivy("Server", "Server Ready", null);
     private static final int MAX_INFO_AGE = 5000;
     private static String addr ="127.255.255.255";
 
     public static void main(String... args) throws IvyException {
-		{//scope
-			int i = 0;
-			while(i < args.length) {
-				switch(args[i]) {
-				case "-addr":
-					if(i + 1 < args.length) {
-						i++;
-						addr = args[i];
-					}
+		ivy.start(addr);
+		ivy.bindMsg("^(.*)", (sender, s)->msgReceived(sender, s));
+		System.out.println("Server Ready");
+
+		Scanner keyboard = new Scanner(System.in);
+
+		while(true){
+			String text= keyboard.nextLine();
+
+			switch(text){
+				case "sensors" :
+					requestSensors();
 					break;
-				case "-h":
-				case "-help":
-					System.out.println("-addr (addresse) : selectionne l'addresse du bus ivy (d�faut : "+addr+")");
-					System.out.println("-h : affiche cette aide");
-					System.exit(0);
+				case "aggregs" :
+					requestInfosAggreg();
 					break;
-				}
-				i++;
-			}
+				case "stop" :
+					System.exit(1);
+					break;
+				default :
+					break;
+			}	
 		}
 		ivy.start(addr);
 		ivy.bindMsg("^(.*)", (sender, s)->msgReceived(sender, s));
-		startConsole();
+		//startConsole();
 		System.out.println("Server Ready");
     }
     
     private static void requestSensors(){
+		System.out.println("Requesting sensors");
         String command = "request sensors";
         try {
 			ivy.sendMsg(command);
@@ -47,6 +53,7 @@ public class Main {
     }
 
     private static void requestInfosAggreg(){
+		System.out.println("Requesting aggregators");
         String command = "request aggregs";
         try {
 			ivy.sendMsg(command);

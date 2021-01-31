@@ -36,6 +36,10 @@ public class Server {
 					break;
 			}	
 		}
+		ivy.start(addr);
+		ivy.bindMsg("^(.*)", (sender, s)->msgReceived(sender, s));
+		//startConsole();
+		System.out.println("Server Ready");
     }
     
     private static void requestSensors(){

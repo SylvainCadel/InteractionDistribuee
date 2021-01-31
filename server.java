@@ -41,7 +41,8 @@ public class Server {
 		//startConsole();
 		System.out.println("Server Ready");
     }
-    
+	
+
     private static void requestSensors(){
 		System.out.println("Requesting sensors");
         String command = "Server = request sensors";
@@ -74,7 +75,7 @@ public class Server {
 			System.out.println("Received a message from captors");
 		}
 		if(args[0].contains("Aggregateur")){
-			System.out.println("Received a message from captors");
+			System.out.println("Received a message from aggregators");
 		}
         // TODO interpretation à faire
     }

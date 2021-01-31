@@ -33,7 +33,6 @@ void draw()
   //println(val); //print it out in the console
   
   ouverturePorte(0);
-  
 }
 
 void ouverturePorte(int etatporte){

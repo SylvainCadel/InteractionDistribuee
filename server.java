@@ -14,7 +14,7 @@ public class Server {
 
     public static void main(String... args) throws IvyException {
 		ivy.start(addr);
-		ivy.bindMsg("^(.*)", (sender, s)->msgReceived(sender, s));
+		ivy.bindMsg("^Agent = (.*)", (sender, s)->msgReceived(sender, s));
 		System.out.println("Server Ready");
 
 		Scanner keyboard = new Scanner(System.in);
@@ -44,7 +44,7 @@ public class Server {
     
     private static void requestSensors(){
 		System.out.println("Requesting sensors");
-        String command = "request sensors";
+        String command = "Server = request sensors";
         try {
 			ivy.sendMsg(command);
 		} catch (IvyException e) {
@@ -54,7 +54,7 @@ public class Server {
 
     private static void requestInfosAggreg(){
 		System.out.println("Requesting aggregators");
-        String command = "request aggregs";
+        String command = "Server = request aggregs";
         try {
 			ivy.sendMsg(command);
 		} catch (IvyException e) {
@@ -67,8 +67,15 @@ public class Server {
 			System.out.println("Received void message. Aborting.");
 			return;
 		}
-		System.out.println("msg received :" +args[0]);
+		System.out.println("msg received : " +args[0]);
 		if(args[0].contains("Ready"))return;
+
+		if(args[0].contains("Capteur")){
+			System.out.println("Received a message from captors");
+		}
+		if(args[0].contains("Aggregateur")){
+			System.out.println("Received a message from captors");
+		}
         // TODO interpretation à faire
     }
 }

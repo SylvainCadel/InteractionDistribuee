@@ -69,6 +69,7 @@ public class Agent {
     }
 
     public void sendToServer(){
+        System.out.println("sensors info sent");
         try {
             int meanValue = meanCalculation();
 

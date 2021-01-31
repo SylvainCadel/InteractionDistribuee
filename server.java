@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 import java.util.Scanner;
 
 import fr.dgac.ivy.Ivy;
@@ -73,10 +70,30 @@ public class Server {
 
 		if(args[0].contains("Capteur")){
 			System.out.println("Received a message from captors");
+<<<<<<< Updated upstream
 		}
 		if(args[0].contains("Aggregateur")){
 			System.out.println("Received a message from aggregators");
 		}
         // TODO interpretation à faire
+=======
+			String toSplit = args[0];
+			String[] splittedString = toSplit.split(" ");
+			
+			for(String part : splittedString){
+				System.out.println(part);
+			}
+
+		}
+		if(args[0].contains("Aggregateur")){
+			System.out.println("Received a message from aggregators");
+			String toSplit = args[0];
+			String[] splittedString = toSplit.split(" ");
+			
+			for(String part : splittedString){
+				System.out.println(part);
+			}
+		}
+>>>>>>> Stashed changes
     }
 }

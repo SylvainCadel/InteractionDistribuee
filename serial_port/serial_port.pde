@@ -47,18 +47,24 @@ void draw()
     nums2 = split(val2,":");
     if(nums2.length > 1){
         etat_portail.equals(nums2[1]);
-        if(etat_portail.equals("1")){
-            
-        }
     }
   }
   
   
 }
-/*
-void ouverturePorte(int etatporte){
-  myPort2.write(etatporte);          //envoie de l'état
-}*/
+
+void ouverturePorte(String ouverture){
+  if(etat_portail.equals("1") && ouverture.equals("0")){
+    ouverture = "ouvrir:" + ouverture;
+    myPort2.write(ouverture);          //envoie de l'état
+    delay(500);                       //
+  }
+  else if(etat_portail.equals("0") && ouverture.equals("1")){
+    ouverture = "ouvrir:" + ouverture;
+    myPort2.write(ouverture);          //envoie de l'état
+    delay(500);
+  }
+}
 
 Queue<String> getQueueHygro(){
   return listValHygro;

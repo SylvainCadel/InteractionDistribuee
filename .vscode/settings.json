@@ -1,6 +1,8 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "c:\\Users\\lacou\\Desktop\\Cours\\M2\\Interaction Distribuée\\Libraries\\ivy-java-1.2.17.jar"
+        "Libraries/ivy-java-1.2.17.jar",
+        "Libraries/json-simple-1.1.jar",
+        "Libraries/org.json-chargebee-1.0.jar"
     ]
 }

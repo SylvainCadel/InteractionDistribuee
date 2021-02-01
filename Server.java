@@ -2,16 +2,26 @@ import java.util.Scanner;
 
 import fr.dgac.ivy.*;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Server {
 
 	static Ivy ivy = new Ivy("Server", "Server Ready", null);	
 	private static String addr = "127.255.255.255";
-	
+	private static FileWriter file;
 
-	public static void main(String... args) throws IvyException {
+	//static ServerVue serv = new ServerVue();
+	
+	public static void main(String... args) throws IvyException, IOException{
 		ivy.start(addr);
 		ivy.bindMsg("^Agent = (.*)", (sender, s)->msgReceived(sender, s));
 		System.out.println("Server ready");
+		file = new FileWriter("aggregators.json");
 		Scanner keyboard = new Scanner(System.in);
 
 		while(true){
@@ -54,10 +64,6 @@ public class Server {
     }
 	
 	private static void msgReceived(IvyClient sender, String... args){
-        if(args.length == 0) {
-			System.out.println("Received void message. Aborting.");
-			return;
-		}
 		System.out.println("msg received : " +args[0]);
 		if(args[0].contains("Ready"))return;
 
@@ -69,24 +75,43 @@ public class Server {
 			for(int i = 1; i<splittedString.length;i++){
 				captorValues[i-1] = splittedString[i];
 			}
-
-			for(int i=1; i<captorValues.length+1; i++){
-				System.out.println("Capteur " + i + " : " + captorValues[i-1]);
-			}
 		}
 		if(args[0].contains("Aggregateur")){
-			// Might need a JSON parser
+			// Definitely need a JSON parser
 			System.out.println("Received a message from captors");
 			String toSplit = args[0];
-			String[] splittedString = toSplit.split("Capteur = ");
-			String[] captorValues = new String[splittedString.length-1];
+			String[] splittedString = toSplit.split("Aggregateur = ");
+			String[] aggreg = new String[splittedString.length-1];
 			for(int i = 1; i<splittedString.length;i++){
-				captorValues[i-1] = splittedString[i];
+				aggreg[i-1] = splittedString[i];
 			}
+			try {
+				JSONArray array = new JSONArray(aggreg[0]);
+				writeFile(array);
 
-			for(int i=1; i<captorValues.length+1; i++){
-				System.out.println("Capteur " + i + " : " + captorValues[i-1]);
-			}
+			} catch (JSONException je) {
+				je.printStackTrace();
+			}	
 		}
-    }
+	}
+	
+	private static void writeFile(JSONArray array){
+		for(int i=0; i < array.length(); i++){  
+			try{
+				JSONObject object = array.getJSONObject(i);
+				file.write(object.toString());  
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException je){
+				je.printStackTrace();
+			} finally {
+				try {
+					file.flush();
+					file.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} 
+	}
 }

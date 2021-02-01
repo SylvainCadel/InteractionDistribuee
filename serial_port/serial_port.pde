@@ -9,18 +9,20 @@ String val;
 Queue<String> listValHygro = new LinkedList<String>();
 Queue<String> listValTemp = new LinkedList<String>();
 String[] nums;
+Agent ag;
 
 void setup()
 {
-  size(200,200);
+  ag = new Agent();
   // COM7 sont les entrées et COM8 sont les sorties
-  myPort1 = new Serial(this, "COM7", 9600);
-  myPort2 = new Serial(this, "COM8", 9600);
+  myPort1 = new Serial(this, "COM1", 9600);
+  myPort2 = new Serial(this, "COM2", 9600);
   
 }
 
 void draw()
 {
+  this.ag.start();
   //Reception de message
   if ( myPort1.available() > 0) {  // If data is available,
     val = myPort1.readStringUntil('\n');         // read it and store it in val
@@ -37,4 +39,12 @@ void draw()
 
 void ouverturePorte(int etatporte){
   myPort2.write(etatporte);          //envoie de l'état
+}
+
+Queue<String> getQueueHygro(){
+  return listValHygro;
+}
+
+Queue<String> getQueueTemp(){
+    return listValTemp;
 }

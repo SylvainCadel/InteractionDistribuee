@@ -1,6 +1,6 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "c:\\Users\\lacou\\Desktop\\Cours\\M2\\IHM Multimodale\\killer_1_4\\lib\\ivy-java-1.2.18.jar"
+        "c:\\Users\\lacou\\Desktop\\Cours\\M2\\Interaction Distribuée\\Libraries\\ivy-java-1.2.17.jar"
     ]
 }

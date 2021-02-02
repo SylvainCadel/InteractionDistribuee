@@ -2,7 +2,7 @@ import javax.swing.JButton;
 
 import fr.dgac.ivy.*;
 
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.json.JSONArray;
@@ -72,31 +72,33 @@ public class Server {
 	}
 
 	private void msgReceived(IvyClient sender, String... args) {
-		System.out.println("msg received : " + args[0]);
-		// Si le message contient "Capteur", on set les valeurs des capteurs dans la
-		// ServerVue
-		if (args[0].contains("capteurs = ")) {
-			System.out.println("Received a message from captors");
-			String splittedString = args[0].replace("capteurs = ", "");
+		if(args.length > 0) {
+			System.out.println("msg received : " + args[0]);
+			// Si le message contient "Capteur", on set les valeurs des capteurs dans la
+			// ServerVue
+			if (args[0].contains("capteurs = ")) {
+				System.out.println("Received a message from captors");
+				String splittedString = args[0].replace("capteurs = ", "");
 
-			// todo parseJson
-			JSONParser jp = new JSONParser();
-			try {
-				JSONObject jo = (JSONObject) jp.parse(splittedString);
+				// todo parseJson
+				JSONParser jp = new JSONParser();
+				try {
+					JSONObject jo = (JSONObject) jp.parse(splittedString);
 
-				sv.setHygroValue(jo.getJSONObject("hygro").getInt("valeur"));
-				sv.setTempValue(jo.getJSONObject("temp").getInt("valeur"));
-			} catch (Exception e) {
-				e.printStackTrace();
+					sv.setHygroValue(Integer.parseInt(((JSONObject)jo.get("hygro")).get("valeur").toString()));
+					sv.setTempValue(Integer.parseInt(((JSONObject)jo.get("temp")).get("valeur").toString()));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}
-		// Si le message contient "Aggregateur", on écrit les valeurs dans un fichier JSON
-		if(args[0].contains("portail = ")){
-			System.out.println("Received a message from portail");
-			int state = Integer.parseInt(args[0].replace("portail = ", ""));
-			sv.setPortailStateValue(state);
-			if(state == 1 || state == 3)
-				sv.getPortailButton().setEnabled(true);
+			// Si le message contient "Aggregateur", on écrit les valeurs dans un fichier JSON
+			if(args[0].contains("portail = ")){
+				System.out.println("Received a message from portail");
+				int state = Integer.parseInt(args[0].replace("portail = ", ""));
+				sv.setPortailStateValue(state);
+				if(state == 1 || state == 3)
+					sv.getPortailButton().setEnabled(true);
+			}
 		}
 	}
 }

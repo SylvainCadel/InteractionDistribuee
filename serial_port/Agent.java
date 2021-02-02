@@ -1,6 +1,5 @@
 package serial_port;
 
-import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -32,8 +31,21 @@ public class Agent {
 		busIvy = new Ivy("Agent", null, null);
 
 		try {
-			jsonObject = (JSONObject) (new JSONParser()).parse(new FileReader("capteur.json"));
 
+			JSONObject tempJSON = new JSONObject();
+			tempJSON.put("valeur", 25);
+			tempJSON.put("longitude", 195.468750);
+			tempJSON.put("latitude", 65.035060);
+
+			JSONObject hygroJSON = new JSONObject();
+			hygroJSON.put("valeur", 50);
+			hygroJSON.put("longitude", 195.468750);
+			hygroJSON.put("latitude", 65.035060);
+
+			jsonObject = new JSONObject();
+			jsonObject.put("temp", tempJSON);
+			jsonObject.put("hygro", hygroJSON);
+	  
 			humidityValue = jsonObject.getJSONObject("hygro");
 			temperatureValue = jsonObject.getJSONObject("temp");
 		} catch (Exception e) {
@@ -94,16 +106,15 @@ public class Agent {
 	public void sendToServerValue() {
 		setJSONValue();
 		try {
-			busIvy.sendMsg("Agent = capteurs =" + jsonObject.toString());
+			busIvy.sendMsg(("Agent = capteurs = " + jsonObject.toString()).replaceAll("\n", ""));
 		} catch (IvyException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void sendToServerPortail() {
-		setJSONValue();
 		try {
-			busIvy.sendMsg("Agent = portail =" + etat_portail);
+			busIvy.sendMsg("Agent = portail = " + etat_portail);
 		} catch (IvyException e) {
 			e.printStackTrace();
 		}
@@ -118,5 +129,10 @@ public class Agent {
 			totalValue += i;
 		int meanValue = totalValue / queueSize;
 		return meanValue;
+	}
+
+
+	public static void main(String[] args) {
+		new Agent().start(null);
 	}
 }

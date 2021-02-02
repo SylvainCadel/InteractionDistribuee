@@ -23,8 +23,10 @@ void loop() {
   // read the value from the sensor:
   hygroValue = analogRead(hygro);
   tempValue = analogRead(temp);
-  printf("hygro:%d\n", hygroValue);
-  printf("temp:%d\n", tempValue);
+  int hygro = (int)(hygroValue/4.5);
+  if(hygro > 100) hygro = 100;
+  printf("hygro:%d\n", hygro);
+  printf("temp:%d\n", (int)(tempValue/15)-20);
   // turn the ledPin on
   digitalWrite(ledPin, !digitalRead(ledPin));
   delay(1000);

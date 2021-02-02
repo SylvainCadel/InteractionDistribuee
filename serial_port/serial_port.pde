@@ -28,7 +28,7 @@ void setup()
   });
   
 }
- //<>//
+
 void draw()
 {
   if ( myPort1.available() > 0) {  // If data is available,
@@ -37,7 +37,7 @@ void draw()
     if(nums.length > 1){
       nums[1] = nums[1].replaceAll("\n", "");
       if(nums[0].equals("hygro")){
-        ag.listValHygro.add(Integer.parseInt(nums[1])); //<>//
+        ag.listValHygro.add(Integer.parseInt(nums[1]));
         while(ag.listValHygro.size() > 25)
           ((LinkedList)ag.listValHygro).removeFirst();
       }
@@ -51,19 +51,23 @@ void draw()
   
   if(myPort2.available() > 0){
     val2 = myPort2.readStringUntil('\n');
+    println("msg from portail : " + val2);
     nums2 = split(val2,":");
     if(nums2.length > 1){
-        ag.etat_portail = nums2[1];
+        nums2[1] = nums2[1].replaceAll("\r", "");
+        ag.etat_portail = nums2[1].replaceAll("\n", "");
+        ag.sendToServerPortail();
     }
   }
+  delay(500); 
   if(++time == 12) {
     ag.sendToServerValue();
     time = 0;
   }
-  delay(500);  
+   
 }
 
-Integer ouverturePorte(){
-  myPort2.write(ag.cmdPortail);
+Integer ouverturePorte(){ //<>//
+  myPort2.write(ag.cmdPortail + "\n"); //<>//
   return 0;
 }

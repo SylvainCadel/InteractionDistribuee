@@ -93,26 +93,31 @@ public class ServerVue extends JFrame {
 			case 1 :
 				this.labelPortStatue.setText("Fermé");
 				this.labelPortStatue.setForeground(Color.RED);
+				this.but.setText("Ouvrir");
 				break;
 
 			case 2 : 
 				this.labelPortStatue.setText("Ouverture");
 				this.labelPortStatue.setForeground(Color.YELLOW);
+				this.but.setText("...");
 				break;
 
 			case 3 : 
 				this.labelPortStatue.setText("Ouvert");
 				this.labelPortStatue.setForeground(Color.BLUE);
+				this.but.setText("Fermer");
 				break;
 
 			case 4 : 
 				this.labelPortStatue.setText("Fermeture");
 				this.labelPortStatue.setForeground(Color.YELLOW);
+				this.but.setText("...");
 				break;
 
 			default :
 				this.labelPortStatue.setText("Fermé");
 				this.labelPortStatue.setForeground(Color.RED);
+				this.but.setText("Ouvrir");
 				break;
 		}
 	}

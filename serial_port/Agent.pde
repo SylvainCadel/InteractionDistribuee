@@ -51,7 +51,7 @@ public class Agent {
         }
         
     }
-
+ //<>//
     public void start() {
         try {
             busIvy.start("127.255.255.255:2010");
@@ -107,7 +107,7 @@ public class Agent {
     }
 
     public ArrayList<Integer> setJSONValue(){
-        ArrayList<Integer> mean = new ArrayList<Integer>()
+        ArrayList<Integer> mean = new ArrayList<Integer>();
       
         int meanValueHygro = meanCalculation(getQueueHygro());
         humidityValue.put("valeur", meanValueHygro);

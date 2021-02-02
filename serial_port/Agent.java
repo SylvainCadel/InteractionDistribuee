@@ -13,13 +13,8 @@ import java.util.ArrayList;
 
 public class Agent {
     private Ivy busIvy;
-    
-    private FileReader reader;
 
-    private JSONParser jsonParser;
     private JSONObject jsonObject;
-    private JSONObject humiditySensor;
-    private JSONObject temperatureSensor;
     private JSONObject humidityValue;
     private JSONObject temperatureValue;
 
@@ -28,22 +23,11 @@ public class Agent {
         busIvy = new Ivy("Agent", null, null);
 
         try {
-            reader = new FileReader("capteur.json");
-            jsonParser = new JSONParser();
-            jsonObject = (JSONObject) jsonParser.parse(reader);
-
-            temperatureSensor = (JSONObject) jsonObject.get("Alaska");
-            humiditySensor = (JSONObject) jsonObject.get("Bermudes");
+            jsonObject = (JSONObject) (new JSONParser()).parse(new FileReader("capteur.json"));
             
-            temperatureValue = (JSONObject) temperatureSensor.get("valeur");
-            humidityValue = (JSONObject) humiditySensor.get("valeur");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch(ParseException e){
+            temperatureValue = (JSONObject) jsonObject.get("jardin").get("temp").get("valeur");
+            humidityValue = (JSONObject) jsonObject.get("jardin").get("hygro").get("valeur");
+        } catch(Exception e){
           e.printStackTrace();
         }
         
@@ -52,12 +36,11 @@ public class Agent {
     public void start() {
         try {
             busIvy.start("127.255.255.255:2010"); //<>//
-            System.out.println("Agent started");
 
             busIvy.bindMsg("^Server = request (.*)", new IvyMessageListener() {
                 public void receive(IvyClient client, String[] args) {
                     // Si on reçoit request sensors on envoie les valeurs au serveur
-                    if(args[0].contains("sensors")){
+                    if(args[0].contains("portail")){
                         try {
                             sendToServerValue();                        
                         } catch (Exception e) {
@@ -68,7 +51,7 @@ public class Agent {
                     // Si on reçoit request aggregs on envoie le json de l'aggregateur au serveur
                     if(args[0].contains("aggregs")){
                         try {
-                            busIvy.sendMsg("Agent = Aggregateur = " +jsonObject.toString());                       
+                            busIvy.sendMsg("Agent = Aggregateur = " + jsonObject.toString());                       
                         } catch (Exception e) {
                             System.out.println("Erreur message");
                             e.printStackTrace();
@@ -77,21 +60,7 @@ public class Agent {
                 }
             });
             
-            // TODO intégrer l'envoi de l'état du portail
-            busIvy.bindMsg("^Server = (.*)", new IvyMessageListener() {
-                public void receive(IvyClient client, String[] args) {
-                    try {
-                        sendToServerValue();                        
-                    } catch (Exception e) {
-                        System.out.println("Erreur message");
-                        e.printStackTrace();
-                    }
-                }
-            });
-            
-            if(second()%60 == 0)
-              print("a");
-              //sendToServerValue();
+            System.out.println("Agent started");
         } catch (IvyException e) {
             e.printStackTrace();
         }

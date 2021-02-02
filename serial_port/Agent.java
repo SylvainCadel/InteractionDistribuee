@@ -26,7 +26,7 @@ public class Agent {
 	public String etat_portail;
 	public String cmdPortail = "ouvre:0";
 
-	private Callable<Void> portailCallback;
+	private Callable<Integer> portailCallback;
 
 	public Agent() {
 		busIvy = new Ivy("Agent", null, null);
@@ -42,7 +42,7 @@ public class Agent {
 
 	}
 
-	public void start(Callable<Void> callback) {
+	public void start(Callable<Integer> callback) {
 		this.portailCallback = callback;
 		try {
 			busIvy.start("127.255.255.255:2010"); // <>//

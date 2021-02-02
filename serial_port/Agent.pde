@@ -14,9 +14,6 @@ import java.util.ArrayList;
 public class Agent {
     private Ivy busIvy;
     
-    private Queue<String> sensorValueHygro;
-    private Queue<String> sensorValueTemp;
-    
     private FileReader reader;
 
     private JSONParser jsonParser;
@@ -38,8 +35,8 @@ public class Agent {
             temperatureSensor = (JSONObject) jsonObject.get("Alaska");
             humiditySensor = (JSONObject) jsonObject.get("Bermudes");
             
-            temperatureValue = (JSONObject) jsonObject.get("valeur");
-            humidityValue = (JSONObject) jsonObject.get("valeur");
+            temperatureValue = (JSONObject) temperatureSensor.get("valeur");
+            humidityValue = (JSONObject) humiditySensor.get("valeur");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -51,10 +48,10 @@ public class Agent {
         }
         
     }
- //<>//
+
     public void start() {
         try {
-            busIvy.start("127.255.255.255:2010");
+            busIvy.start("127.255.255.255:2010"); //<>//
             System.out.println("Agent started");
 
             // Envoi des valeurs moyennes de nos capteurs

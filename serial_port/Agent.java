@@ -5,7 +5,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import fr.dgac.ivy.Ivy;
@@ -23,6 +24,7 @@ public class Agent {
 	public Queue<Integer> listValHygro = new LinkedList<>();
 	public Queue<Integer> listValTemp = new LinkedList<>();
 	public String etat_portail;
+	public String cmdPortail = "ouvre:0";
 
 	private Callable<Void> portailCallback;
 
@@ -32,10 +34,8 @@ public class Agent {
 		try {
 			jsonObject = (JSONObject) (new JSONParser()).parse(new FileReader("capteur.json"));
 
-			humidityValue = ((JSONObject) (((JSONObject) (((JSONObject) jsonObject.get("jardin")).get("hygro")))
-					.get("valeur")));
-			temperatureValue = ((JSONObject) (((JSONObject) (((JSONObject) jsonObject.get("jardin")).get("temp")))
-					.get("valeur")));
+			humidityValue = jsonObject.getJSONObject("hygro");
+			temperatureValue = jsonObject.getJSONObject("temp");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -50,15 +50,16 @@ public class Agent {
 			busIvy.bindMsg("^Server = request (.*)", new IvyMessageListener() {
 				public void receive(IvyClient client, String[] args) {
 					// Si on reçoit request sensors on envoie les valeurs au serveur
-					if (args[0].contains("portail")) {
+					if (args[0].contains("portail ")) {
 						try {
+							cmdPortail = "ouvre:" + args[0].replace("portail ", "");
 							portailCallback.call();
 						} catch (Exception e) {
 							System.out.println("Erreur message");
 							e.printStackTrace();
 						}
 					}
-					// Si on reçoit request aggregs on envoie le json de l'aggregateur au serveur
+
 					if (args[0].contains("capteur")) {
 						try {
 							sendToServerValue();
@@ -81,14 +82,28 @@ public class Agent {
 	}
 
 	private void setJSONValue() {
-		humidityValue.put("valeur", meanCalculation(this.listValHygro));
-		temperatureValue.put("valeur", meanCalculation(this.listValTemp));
+		try {
+			humidityValue.put("valeur", meanCalculation(this.listValHygro));
+			temperatureValue.put("valeur", meanCalculation(this.listValTemp));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void sendToServerValue() {
 		setJSONValue();
 		try {
-			busIvy.sendMsg("Agent = " + jsonObject.toString());
+			busIvy.sendMsg("Agent = capteurs =" + jsonObject.toString());
+		} catch (IvyException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendToServerPortail() {
+		setJSONValue();
+		try {
+			busIvy.sendMsg("Agent = portail =" + etat_portail);
 		} catch (IvyException e) {
 			e.printStackTrace();
 		}

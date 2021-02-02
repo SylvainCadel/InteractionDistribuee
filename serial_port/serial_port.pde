@@ -59,5 +59,5 @@ void draw()
 }
 
 void ouverturePorte(){
-  myPort2.write(ag.etat_portail);
+  myPort2.write(ag.cmdPortail);
 }

@@ -1,5 +1,4 @@
 {
-    "Jardin": {
 	"temp" : {
 		"valeur" : "25",
 		"longitude": "195.468750",
@@ -10,8 +9,4 @@
 		"longitude": "195.468750",
 		"latitude": "65.035060"
 	}
-    },
-    "Portail": {
-        "etat" : "1"
-    }
 }

@@ -1,9 +1,5 @@
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -26,6 +22,7 @@ public class ServerVue extends JFrame {
 	private JLabel labelPortStatue = new JLabel("Fermé");
 
 	JButton but = new JButton("Ouvrir");
+	JButton butRefresh = new JButton("Refresh");
 
 	public ServerVue() throws IOException {
 		super("My Garden");
@@ -67,28 +64,20 @@ public class ServerVue extends JFrame {
 
 		
 		but.setBounds(410, 625, 85, 25);
-		but.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (but.getText().equals("Ouvrir")) {
-					but.setText("Fermer");
-					labelPortStatue.setText("Ouvert");
-					labelPortStatue.setForeground(Color.BLUE);
-				} else {
-					but.setText("Ouvrir");
-					labelPortStatue.setText("Fermé");
-					labelPortStatue.setForeground(Color.RED);
-				}
-			}
-		});
 		this.add(but);
+
+		butRefresh.setBounds(10, 650, 85, 25);
+		this.add(butRefresh);
 
 		this.revalidate();
 	}
 
 	public JButton getPortailButton() {
 		return this.but;
+	}
+
+	public JButton getRefreshButton() {
+		return this.butRefresh;
 	}
 	
 	public void setHygroValue(int val) {

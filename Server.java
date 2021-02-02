@@ -98,10 +98,13 @@ public class Server {
 			System.out.println("Received a message from captors");
 			String toSplit = args[0];
 			String[] splittedString = toSplit.split("Capteur = ");
-			String[] captorValues = new String[splittedString.length-1];
+			Integer[] captorValues = new Integer[splittedString.length-1];
 			for(int i = 1; i<splittedString.length;i++){
-				captorValues[i-1] = splittedString[i];
+				captorValues[i-1] = Integer.parseInt(splittedString[i]);
 			}
+			sv.setHygroValue(captorValues[0]);
+			sv.setTempValue(captorValues[1]);
+			sv.setPortailStateValue(captorValues[2]);
 		}
 		if(args[0].contains("Aggregateur")){
 			// Definitely need a JSON parser

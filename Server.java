@@ -14,16 +14,16 @@ public class Server {
 	static Ivy ivy = new Ivy("Server", "Server Ready", null);	
 	private static String addr = "127.255.255.255";
 	private static FileWriter file;
-
-	//static ServerVue serv = new ServerVue();
 	
 	public static void main(String... args) throws IvyException, IOException{
+
+		final ServerVue serverVue = new ServerVue();
+
 		ivy.start(addr);
-		ivy.bindMsg("^Agent = (.*)", (sender, s)->msgReceived(sender, s));
+		ivy.bindMsg("^Agent = (.*)", (sender, s)->msgReceived(sender, serverVue, s));
 		System.out.println("Server ready");
 		file = new FileWriter("aggregators.json");
 		Scanner keyboard = new Scanner(System.in);
-
 		while(true){
 			String text= keyboard.nextLine();
 
@@ -63,7 +63,7 @@ public class Server {
 		}
     }
 	
-	private static void msgReceived(IvyClient sender, String... args){
+	private static void msgReceived(IvyClient sender, ServerVue serverVue, String... args){
 		System.out.println("msg received : " +args[0]);
 		if(args[0].contains("Ready"))return;
 
@@ -71,10 +71,13 @@ public class Server {
 			System.out.println("Received a message from captors");
 			String toSplit = args[0];
 			String[] splittedString = toSplit.split("Capteur = ");
-			String[] captorValues = new String[splittedString.length-1];
+			Integer[] captorValues = new Integer[splittedString.length-1];
 			for(int i = 1; i<splittedString.length;i++){
-				captorValues[i-1] = splittedString[i];
+				captorValues[i-1] = Integer.parseInt(splittedString[i]);
 			}
+			serverVue.setHygroValue(captorValues[0]);
+			serverVue.setTempValue(captorValues[1]);
+			serverVue.setPortailStateValue(captorValues[2]);
 		}
 		if(args[0].contains("Aggregateur")){
 			// Definitely need a JSON parser

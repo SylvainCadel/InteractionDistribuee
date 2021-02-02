@@ -77,8 +77,8 @@ public class Agent {
                 }
             });
             
-            // RAB
-            busIvy.bindMsg("^server request=(.*)", new IvyMessageListener() {
+            // TODO intégrer l'envoi de l'état du portail
+            busIvy.bindMsg("^Server = (.*)", new IvyMessageListener() {
                 public void receive(IvyClient client, String[] args) {
                     try {
                         sendToServerValue();                        
@@ -119,7 +119,7 @@ public class Agent {
         try {
             ArrayList<Integer> mean = setJSONValue();
 
-            //TODO
+            //TODO Concatener pour avoir qque chose de la forme "Agent = Capteur = x Capteur = y Capteur = z ..."
             busIvy.sendMsg("Agent = Capteur = " + mean.get(0));
             busIvy.sendMsg("Agent = Capteur = " + mean.get(1));
         } catch (IvyException e) {

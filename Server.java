@@ -20,8 +20,6 @@ public class Server {
 	private String addr = "127.255.255.255";
 	private FileWriter file;
 	private ServerVue sv;
-
-	//static ServerVue serv = new ServerVue();
 	
 	public static void main(String... args) throws IvyException, IOException{
 		Scanner keyboard = new Scanner(System.in);
@@ -60,11 +58,13 @@ public class Server {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (but.getText().equals("Ouvrir")) {
+					System.out.println("Ouverture");
 					//TODO send ouvrir:1 to agent
-					but.setEnabled(false);
+					but.setEnabled(true);
 				} else {
 					//TODO send ouvrir:0 to agent
-					but.setEnabled(false);
+					System.out.println("Fermeture");
+					but.setEnabled(true);
 				}
 			}
 		});
@@ -93,7 +93,7 @@ public class Server {
 	private void msgReceived(IvyClient sender, String... args){
 		System.out.println("msg received : " +args[0]);
 		if(args[0].contains("Ready"))return;
-
+		// Si le message contient "Capteur", on set les valeurs des capteurs dans la ServerVue
 		if(args[0].contains("Capteur")){
 			System.out.println("Received a message from captors");
 			String toSplit = args[0];
@@ -106,8 +106,8 @@ public class Server {
 			sv.setTempValue(captorValues[1]);
 			sv.setPortailStateValue(captorValues[2]);
 		}
+		// Si le message contient "Aggregateur", on écrit les valeurs dans un fichier JSON
 		if(args[0].contains("Aggregateur")){
-			// Definitely need a JSON parser
 			System.out.println("Received a message from captors");
 			String toSplit = args[0];
 			String[] splittedString = toSplit.split("Aggregateur = ");

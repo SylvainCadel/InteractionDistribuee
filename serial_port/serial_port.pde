@@ -46,7 +46,7 @@ void draw()
     val2 = myPort2.readStringUntil('\n');
     nums2 = split(val2,":");
     if(nums2.length > 1){
-        etat_portail.equals(nums2[1]);
+        etat_portail = nums2[1];
     }
   }
   
@@ -54,16 +54,7 @@ void draw()
 }
 
 void ouverturePorte(String ouverture){
-  if(etat_portail.equals("1") && ouverture.equals("0")){
-    ouverture = "ouvrir:" + ouverture;
-    myPort2.write(ouverture);          //envoie de l'état
-    delay(500);                       //
-  }
-  else if(etat_portail.equals("0") && ouverture.equals("1")){
-    ouverture = "ouvrir:" + ouverture;
-    myPort2.write(ouverture);          //envoie de l'état
-    delay(500);
-  }
+  myPort2.write(ouverture);
 }
 
 Queue<String> getQueueHygro(){

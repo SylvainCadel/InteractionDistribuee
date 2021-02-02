@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+import javax.swing.JButton;
+
 import fr.dgac.ivy.*;
 
 import org.json.JSONObject;
@@ -9,32 +11,34 @@ import org.json.JSONException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class Server {
 
-	static Ivy ivy = new Ivy("Server", "Server Ready", null);	
-	private static String addr = "127.255.255.255";
-	private static FileWriter file;
+	private Ivy ivy = new Ivy("Server", "Server Ready", null);	
+	private String addr = "127.255.255.255";
+	private FileWriter file;
+	private ServerVue sv;
 
 	//static ServerVue serv = new ServerVue();
 	
 	public static void main(String... args) throws IvyException, IOException{
-		ivy.start(addr);
-		ivy.bindMsg("^Agent = (.*)", (sender, s)->msgReceived(sender, s));
-		System.out.println("Server ready");
-		file = new FileWriter("aggregators.json");
 		Scanner keyboard = new Scanner(System.in);
+		Server s = new Server();
 
 		while(true){
 			String text= keyboard.nextLine();
 
 			switch(text){
 				case "sensors" :
-					requestSensors();
+					s.requestSensors();
 					break;
 				case "aggregs" :
-					requestInfosAggreg();
+					s.requestInfosAggreg();
 					break;
 				case "stop" :
+					keyboard.close();
 					System.exit(1);
 					break;
 				default :
@@ -43,7 +47,30 @@ public class Server {
 		}
 	}
 
-	private static void requestSensors(){
+	public Server() throws IvyException, IOException {
+		this.ivy.start(addr);
+		ivy.bindMsg("^Agent = (.*)", (sender, s)->msgReceived(sender, s));
+		System.out.println("Server ready");
+		file = new FileWriter("aggregators.json");
+
+		sv = new ServerVue();
+		JButton but = sv.getPortailButton();
+		but.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (but.getText().equals("Ouvrir")) {
+					//TODO send ouvrir:1 to agent
+					but.setEnabled(false);
+				} else {
+					//TODO send ouvrir:0 to agent
+					but.setEnabled(false);
+				}
+			}
+		});
+	}
+
+	private void requestSensors(){
 		System.out.println("Requesting sensors");
         String command = "Server = request sensors";
         try {
@@ -53,7 +80,7 @@ public class Server {
 		}
     }
 
-    private static void requestInfosAggreg(){
+    private void requestInfosAggreg(){
 		System.out.println("Requesting aggregators");
         String command = "Server = request aggregs";
         try {
@@ -63,7 +90,7 @@ public class Server {
 		}
     }
 	
-	private static void msgReceived(IvyClient sender, String... args){
+	private void msgReceived(IvyClient sender, String... args){
 		System.out.println("msg received : " +args[0]);
 		if(args[0].contains("Ready"))return;
 
@@ -95,7 +122,7 @@ public class Server {
 		}
 	}
 	
-	private static void writeFile(JSONArray array){
+	private void writeFile(JSONArray array){
 		for(int i=0; i < array.length(); i++){  
 			try{
 				JSONObject object = array.getJSONObject(i);

@@ -32,10 +32,27 @@ public class Agent {
 		try {
 			jsonObject = (JSONObject) (new JSONParser()).parse(new FileReader("capteur.json"));
 
-			humidityValue = ((JSONObject) (((JSONObject) (((JSONObject) jsonObject.get("jardin")).get("hygro")))
-					.get("valeur")));
-			temperatureValue = ((JSONObject) (((JSONObject) (((JSONObject) jsonObject.get("jardin")).get("temp")))
-					.get("valeur")));
+      jsonObject = new JSONObject();
+      
+      JSONObject tempJSON = new JSONObject();
+      tempJSON.setInt("valeur", 25);
+      tempJSON.setFloat("longitude", 195.468750);
+      tempJSON.setFloat("latitude", 65.035060);
+
+      JSONObject hygroJSON = new JSONObject();
+      hygroJSON.setInt("valeur", 50);
+      hygroJSON.setFloat("longitude", 195.468750);
+      hygroJSON.setFloat("latitude", 65.035060);
+
+      jsonObject.setJSONObsject("temp", tempJSON);
+      jsonObject.setJSONObsject("hygro", hygroJSON);
+
+      
+
+			humidityValue = (((JSONObject) (((JSONObject) jsonObject.get("hygro")))
+					.get("valeur"));
+			temperatureValue = (((JSONObject) (((JSONObject) jsonObject.get("temp")))
+					.get("valeur"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

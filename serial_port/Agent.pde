@@ -54,28 +54,26 @@ public class Agent {
             busIvy.start("127.255.255.255:2010"); //<>//
             System.out.println("Agent started");
 
-            // Envoi des valeurs moyennes de nos capteurs
-            busIvy.bindMsg("^server request=(.*)", new IvyMessageListener() {
+            busIvy.bindMsg("^Server = request (.*)", new IvyMessageListener() {
                 public void receive(IvyClient client, String[] args) {
-                    try {
-                        sendToServerValue();                        
-                    } catch (Exception e) {
-                        System.out.println("Erreur message");
-                        e.printStackTrace();
-                    }
-                }
-            });
-            
-            
-            // Envoi de tout le JSON
-            busIvy.bindMsg("^server request=(.*)", new IvyMessageListener() {
-                public void receive(IvyClient client, String[] args) {
-                    try {
-                        busIvy.sendMsg(jsonObject.toString());
-                    } catch (Exception e) {
-                        System.out.println("Erreur message");
-                        e.printStackTrace();
-                    }
+                    // Si on reçoit request sensors on envoie les valeurs au serveur
+                    if(args[0].contains("sensors")){
+                        try {
+                            sendToServerValue();                        
+                        } catch (Exception e) {
+                            System.out.println("Erreur message");
+                            e.printStackTrace();
+                        }
+                    } 
+                    // Si on reçoit request aggregs on envoie le json de l'aggregateur au serveur
+                    if(args[0].contains("aggregs")){
+                        try {
+                            busIvy.sendMsg("Agent = Aggregateur = " +jsonObject.toString());                       
+                        } catch (Exception e) {
+                            System.out.println("Erreur message");
+                            e.printStackTrace();
+                        }
+                    } 
                 }
             });
             
@@ -104,7 +102,7 @@ public class Agent {
     }
 
     public ArrayList<Integer> setJSONValue(){
-        ArrayList<Integer> mean = new ArrayList<Integer>();
+        ArrayList<Integer> mean = new ArrayList<Integer>()
       
         int meanValueHygro = meanCalculation(getQueueHygro());
         humidityValue.put("valeur", meanValueHygro);
@@ -122,8 +120,8 @@ public class Agent {
             ArrayList<Integer> mean = setJSONValue();
 
             //TODO
-            busIvy.sendMsg("Capteur hygro : " + mean.get(0));
-            busIvy.sendMsg("Capteur temp : " + mean.get(1));
+            busIvy.sendMsg("Agent = Capteur = " + mean.get(0));
+            busIvy.sendMsg("Agent = Capteur = " + mean.get(1));
         } catch (IvyException e) {
             e.printStackTrace();
         }

@@ -1,111 +1,107 @@
-import fr.dgac.ivy.*;
+package serial_port;
 
-import java.awt.*;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Queue;
-import org.json.simple.JSONArray;
+import java.util.concurrent.Callable;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import java.util.ArrayList;
+
+import fr.dgac.ivy.Ivy;
+import fr.dgac.ivy.IvyClient;
+import fr.dgac.ivy.IvyException;
+import fr.dgac.ivy.IvyMessageListener;
 
 public class Agent {
-    private Ivy busIvy;
+	private Ivy busIvy;
 
-    private JSONObject jsonObject;
-    private JSONObject humidityValue;
-    private JSONObject temperatureValue;
+	private JSONObject jsonObject;
+	private JSONObject humidityValue;
+	private JSONObject temperatureValue;
 
+	public Queue<Integer> listValHygro = new LinkedList<>();
+	public Queue<Integer> listValTemp = new LinkedList<>();
+	public String etat_portail;
 
-    public Agent() {
-        busIvy = new Ivy("Agent", null, null);
+	private Callable<Void> portailCallback;
 
-        try {
-            jsonObject = (JSONObject) (new JSONParser()).parse(new FileReader("capteur.json"));
-            
-            temperatureValue = (JSONObject) jsonObject.get("jardin").get("temp").get("valeur");
-            humidityValue = (JSONObject) jsonObject.get("jardin").get("hygro").get("valeur");
-        } catch(Exception e){
-          e.printStackTrace();
-        }
-        
-    }
+	public Agent() {
+		busIvy = new Ivy("Agent", null, null);
 
-    public void start() {
-        try {
-            busIvy.start("127.255.255.255:2010"); //<>//
+		try {
+			jsonObject = (JSONObject) (new JSONParser()).parse(new FileReader("capteur.json"));
 
-            busIvy.bindMsg("^Server = request (.*)", new IvyMessageListener() {
-                public void receive(IvyClient client, String[] args) {
-                    // Si on reçoit request sensors on envoie les valeurs au serveur
-                    if(args[0].contains("portail")){
-                        try {
-                            sendToServerValue();                        
-                        } catch (Exception e) {
-                            System.out.println("Erreur message");
-                            e.printStackTrace();
-                        }
-                    } 
-                    // Si on reçoit request aggregs on envoie le json de l'aggregateur au serveur
-                    if(args[0].contains("aggregs")){
-                        try {
-                            busIvy.sendMsg("Agent = Aggregateur = " + jsonObject.toString());                       
-                        } catch (Exception e) {
-                            System.out.println("Erreur message");
-                            e.printStackTrace();
-                        }
-                    } 
-                }
-            });
-            
-            System.out.println("Agent started");
-        } catch (IvyException e) {
-            e.printStackTrace();
-        }
-    }
+			humidityValue = ((JSONObject) (((JSONObject) (((JSONObject) jsonObject.get("jardin")).get("hygro")))
+					.get("valeur")));
+			temperatureValue = ((JSONObject) (((JSONObject) (((JSONObject) jsonObject.get("jardin")).get("temp")))
+					.get("valeur")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    public void stop() {
-        busIvy.stop();
-    }
+	}
 
-    public ArrayList<Integer> setJSONValue(){
-        ArrayList<Integer> mean = new ArrayList<Integer>()
-      
-        int meanValueHygro = meanCalculation(getQueueHygro());
-        humidityValue.put("valeur", meanValueHygro);
-        mean.set(0, meanValueHygro);
-        
-        int meanValueTemp = meanCalculation(getQueueTemp());
-        temperatureValue.put("valeur", meanValueTemp);
-        mean.set(1, meanValueTemp);
+	public void start(Callable<Void> callback) {
+		this.portailCallback = callback;
+		try {
+			busIvy.start("127.255.255.255:2010"); // <>//
 
-        return mean;
-    }
+			busIvy.bindMsg("^Server = request (.*)", new IvyMessageListener() {
+				public void receive(IvyClient client, String[] args) {
+					// Si on reçoit request sensors on envoie les valeurs au serveur
+					if (args[0].contains("portail")) {
+						try {
+							portailCallback.call();
+						} catch (Exception e) {
+							System.out.println("Erreur message");
+							e.printStackTrace();
+						}
+					}
+					// Si on reçoit request aggregs on envoie le json de l'aggregateur au serveur
+					if (args[0].contains("capteur")) {
+						try {
+							sendToServerValue();
+						} catch (Exception e) {
+							System.out.println("Erreur message");
+							e.printStackTrace();
+						}
+					}
+				}
+			});
 
-    public void sendToServerValue(){
-        try {
-            ArrayList<Integer> mean = setJSONValue();
+			System.out.println("Agent started");
+		} catch (IvyException e) {
+			e.printStackTrace();
+		}
+	}
 
-            //TODO Concatener pour avoir qque chose de la forme "Agent = Capteur = x Capteur = y Capteur = z ..."
-            busIvy.sendMsg("Agent = Capteur = " + mean.get(0));
-            busIvy.sendMsg("Agent = Capteur = " + mean.get(1));
-        } catch (IvyException e) {
-            e.printStackTrace();
-        }
-    }
+	public void stop() {
+		busIvy.stop();
+	}
 
-    public int meanCalculation(Queue<String> queueSensor){
-      Object queueValue;
-      int queueSize = queueSensor.size();
-      int totalValue = 0;
+	private void setJSONValue() {
+		humidityValue.put("valeur", meanCalculation(this.listValHygro));
+		temperatureValue.put("valeur", meanCalculation(this.listValTemp));
+	}
 
-      while ((queueValue = queueSensor.poll()) != null){
-          totalValue += (int)queueValue;
-      }
+	public void sendToServerValue() {
+		setJSONValue();
+		try {
+			busIvy.sendMsg("Agent = " + jsonObject.toString());
+		} catch (IvyException e) {
+			e.printStackTrace();
+		}
+	}
 
-      int meanValue = totalValue / queueSize;
-      return meanValue;
-    }
+	private int meanCalculation(Queue<Integer> queueSensor) {
+		int queueSize = queueSensor.size();
+		Integer[] queueValues = new Integer[queueSize];
+		queueValues = queueSensor.toArray(queueValues);
+		int totalValue = 0;
+		for(Integer i : queueValues)
+			totalValue += i;
+		int meanValue = totalValue / queueSize;
+		return meanValue;
+	}
 }

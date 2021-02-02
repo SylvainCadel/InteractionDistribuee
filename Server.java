@@ -47,7 +47,7 @@ public class Server {
 
 	public Server() throws IvyException, IOException {
 		this.ivy.start(addr);
-		ivy.bindMsg("^Agent = (.*)", (sender, s)->msgReceived(sender, s));
+		ivy.bindMsg("^Agent =(.*)", (sender, s)->msgReceived(sender, s));
 		System.out.println("Server ready");
 		file = new FileWriter("aggregators.json");
 
@@ -60,16 +60,17 @@ public class Server {
 				if (but.getText().equals("Ouvrir")) {
 					System.out.println("Ouverture");
 					//TODO send ouvrir:1 to agent
-					but.setEnabled(true);
+					but.setEnabled(false);
 				} else {
 					//TODO send ouvrir:0 to agent
 					System.out.println("Fermeture");
-					but.setEnabled(true);
+					but.setEnabled(false);
 				}
 			}
 		});
 	}
 
+	// Modifier en portail
 	private void requestSensors(){
 		System.out.println("Requesting sensors");
         String command = "Server = request sensors";
@@ -78,8 +79,9 @@ public class Server {
 		} catch (IvyException e) {
 			e.printStackTrace();
 		}
-    }
-
+	}
+	
+	// Modifier en capteur
     private void requestInfosAggreg(){
 		System.out.println("Requesting aggregators");
         String command = "Server = request aggregs";

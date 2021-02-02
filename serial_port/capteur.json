@@ -1,0 +1,18 @@
+{
+    "Alaska": {
+        "nom": "temperature",
+        "valeur": "",
+        "lieu": "Alaska",
+        "id": "1",
+        "longitude": "195.468750",
+        "latitude": "65.035060"
+    },
+    "Bermudes": {
+        "nom": "hygrometrie",
+        "valeur": "",
+        "lieu": "Bermudes",
+        "id": "2",
+        "longitude": "-66.445313",
+        "latitude": "23.483401"
+    }
+}

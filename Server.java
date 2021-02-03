@@ -4,11 +4,6 @@ import fr.dgac.ivy.*;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.FileWriter;
 import java.io.IOException;
 
 import java.awt.event.ActionEvent;
@@ -46,7 +41,6 @@ public class Server {
 						but.setEnabled(false);
 					}
 				} catch (IvyException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

@@ -84,9 +84,13 @@ public class Server {
 				JSONParser jp = new JSONParser();
 				try {
 					JSONObject jo = (JSONObject) jp.parse(splittedString);
+					JSONObject jh = (JSONObject) jo.get("hygro");
+					JSONObject jt = (JSONObject) jo.get("temp");
 
-					sv.setHygroValue(Integer.parseInt(((JSONObject)jo.get("hygro")).get("valeur").toString()));
-					sv.setTempValue(Integer.parseInt(((JSONObject)jo.get("temp")).get("valeur").toString()));
+					sv.setHygroValue(Integer.parseInt(jh.get("valeur").toString()));
+					sv.setHygroLocation(Float.parseFloat(jh.get("longitude").toString()), Float.parseFloat(jh.get("latitude").toString()));
+					sv.setTempValue(Integer.parseInt(jt.get("valeur").toString()));
+					sv.setTempLocation(Float.parseFloat(jt.get("longitude").toString()), Float.parseFloat(jt.get("latitude").toString()));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

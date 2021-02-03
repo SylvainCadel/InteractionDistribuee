@@ -1,7 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +15,9 @@ public class ServerVue extends JFrame {
 	private BufferedImage img = ImageIO.read(new File("maison.png"));
 
 	private JLabel label = new JLabel("Hygrometrie : 100%");
+	JPanel panel = new JPanel();
 	private JLabel labelTemp = new JLabel("T° : 25°C");
+	JPanel panelTemp = new JPanel();
 	private JLabel labelPort = new JLabel("Portail : ");
 	private JLabel labelPortStatue = new JLabel("Fermé");
 
@@ -39,14 +39,12 @@ public class ServerVue extends JFrame {
 		this.setResizable(false);
 		setVisible(true);
 
-		JPanel panel = new JPanel();
 		label.setForeground(Color.BLUE);
 		panel.add(label);
 		panel.setOpaque(false);
 		panel.setBounds(150, 80, 200, 200);
 		this.add(panel);
 
-		JPanel panelTemp = new JPanel();
 		labelTemp.setForeground(Color.RED);
 		panelTemp.add(labelTemp);
 		panelTemp.setOpaque(false);
@@ -83,9 +81,17 @@ public class ServerVue extends JFrame {
 	public void setHygroValue(int val) {
 		this.label.setText("Humidité : " + val + "%");
 	}
+	
+	public void setHygroLocation(float lat, float lon) {
+		this.panel.setBounds((int)lat, (int)lon, this.panel.getWidth(), this.panel.getHeight());
+	}
 
 	public void setTempValue(int val) {
 		this.labelTemp.setText("T° : " + val + "°C");
+	}
+	
+	public void setTempLocation(float lat, float lon) {
+		this.panel.setBounds((int)lat, (int)lon, this.panel.getWidth(), this.panel.getHeight());
 	}
 
 	public void setPortailStateValue(int val) {

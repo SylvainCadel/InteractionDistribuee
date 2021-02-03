@@ -34,13 +34,13 @@ public class Agent {
 
 			JSONObject tempJSON = new JSONObject();
 			tempJSON.put("valeur", 25);
-			tempJSON.put("longitude", 195.468750);
-			tempJSON.put("latitude", 65.035060);
+			tempJSON.put("longitude", 50);
+			tempJSON.put("latitude", 400);
 
 			JSONObject hygroJSON = new JSONObject();
 			hygroJSON.put("valeur", 50);
-			hygroJSON.put("longitude", 195.468750);
-			hygroJSON.put("latitude", 65.035060);
+			hygroJSON.put("longitude", 150);
+			hygroJSON.put("latitude", 80);
 
 			jsonObject = new JSONObject();
 			jsonObject.put("temp", tempJSON);
